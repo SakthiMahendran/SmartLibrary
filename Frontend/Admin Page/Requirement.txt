@@ -1,0 +1,5 @@
+Admin Control
+3 sections
+Primary - Admin with all controls
+Secondary - To edit and add or remove books
+Tertiary - Student view option
