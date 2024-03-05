@@ -14,3 +14,7 @@ type DBDriver interface {
 	InsertTransaction(transaction *models.Transaction) error
 	FindTransactionsByStudentID(id string) ([]*models.Transaction, error)
 }
+
+func Nothing() {
+
+}

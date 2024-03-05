@@ -5,8 +5,8 @@ import (
 	"errors"
 	"time"
 
-	"github.com/SakthiMahendran/SmartLibrary/dbdriver/models"
 	"github.com/SakthiMahendran/SmartLibrary/dbdriver"
+	"github.com/SakthiMahendran/SmartLibrary/dbdriver/models"
 )
 
 type StudentController struct {
@@ -55,15 +55,18 @@ func (sc *StudentController) BorrowBook(regNo, bookID string, dueDate time.Time)
 	book.Remarks = "Borrowed by student with RegNo: " + regNo
 
 	if err := sc.dbDriver.InsertTransaction(&models.Transaction{
-		BookID:            bookID,
-		BookName:          book.BookName,
-		BookDepartment:    book.Department,
-		StudentName:       regNo, // Assuming student name is same as regNo
-		RegNo:             regNo,
-		BorrowTimestamp:   time.Now(),
-		DueDate:           dueDate,
-		StudentDepartment: book.Department,
-		BookStatus:        "borrowed",
+		BookID:             bookID,
+		BookName:           book.BookName,
+		BookDepartment:     book.Department,
+		StudentName:        regNo,
+		RegNo:              regNo,
+		BorrowTimestamp:    time.Now(),
+		DueDate:            dueDate,
+		MailID:             "",
+		StudentDepartment:  book.Department,
+		ReturnTimestamp:    time.Time{},
+		NumOfNotifications: 0,
+		BookStatus:         "borrowed",
 	}); err != nil {
 		return err
 	}

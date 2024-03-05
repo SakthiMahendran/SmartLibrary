@@ -10,6 +10,10 @@ type AdminController struct {
 	dbDriver dbdriver.DBDriver
 }
 
+func Nothing() {
+
+}
+
 func NewAdminController(dbDriver dbdriver.DBDriver) *AdminController {
 	return &AdminController{
 		dbDriver: dbDriver,
