@@ -1,14 +1,16 @@
-package models
+package dbdriver
+
+import models "github.com/SakthiMahendran/SmartLibrary/dbdriver/Models"
 
 type DBDriver interface {
-    Connect() error
-    Disconnect() error
-    InsertAdmin(admin *Admin) error
-    FindAdminByID(id string) (*Admin, error)
-    InsertBook(book *Book) error
-    FindBookByID(id string) (*Book, error)
-    InsertStudent(student *Student) error
-    FindStudentByID(id string) (*Student, error)
-    InsertTransaction(transaction *Transaction) error
-    FindTransactionsByStudentID(id string) ([]*Transaction, error)
+	Connect() error
+	Disconnect() error
+	InsertAdmin(admin *models.Admin) error
+	FindAdminByID(id string) (*models.Admin, error)
+	InsertBook(book *models.Book) error
+	FindBookByID(id string) (*models.Book, error)
+	InsertStudent(student *models.Book) error
+	FindStudentByID(id string) (*models.Student, error)
+	InsertTransaction(transaction *models.Transaction) error
+	FindTransactionsByStudentID(id string) ([]*models.Transaction, error)
 }
