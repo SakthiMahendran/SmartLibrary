@@ -1,0 +1,18 @@
+Inventory Section Documentation
+Overview
+The Inventory Section of the Smart Library System provides administrators with tools to manage the library's book inventory. It allows administrators to view the total number of books available, along with their quantities, and provides functionality to add new books to the inventory.
+
+Functionality
+Total Books Available: Displays the total number of books currently available in the library.
+Book Quantities: Shows the quantities of each book available in the inventory.
+Add New Books: Allows administrators to add new books to the inventory along with their quantities.
+Usage
+1. Total Books Available
+The section provides a quick overview of the total number of books available in the library.
+It updates dynamically based on changes to the inventory.
+2. Book Quantities
+Each book in the inventory is listed along with its quantity.
+Administrators can quickly identify which books are available and their respective quantities.
+3. Add New Books
+Administrators can use the "Add New Books" functionality to expand the library's collection.
+This feature allows administrators to input details such as the book title, author, genre, and quantity to be added to the inventory.

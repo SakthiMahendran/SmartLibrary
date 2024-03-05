@@ -1,0 +1,26 @@
+Home Page:
+Introduction
+The landing page of the Smart Library System serves as the entry point for users to access various functionalities of the system. It provides a user-friendly interface for students and administrators to interact with the system.
+
+Sections Overview
+Header Section: Displays the title of the software and may include navigation links or other relevant information.
+Registration Number Input: Allows users to enter a student's registration number to search for their information.
+Due Date Students List: Displays a list of students with upcoming due dates for book returns.
+Student Information: Provides detailed information about students, including their borrowing history and overdue books.
+Email Reminder: Allows administrators to send email reminders to students before their book return due dates.
+Usage
+1. Header Section
+The header section is static across all pages and displays the title of the Smart Library System.
+Navigation links or additional content can be added as needed for user convenience.
+2. Registration Number Input
+Users can input a student's registration number in the provided text field.
+Clicking the "Search" button triggers a search function to retrieve the student's information.
+3. Due Date Students List
+This section displays a list of students who have upcoming due dates for book returns.
+The list dynamically updates based on the system's data.
+4. Student Information
+Provides detailed information about students, including their borrowing history and overdue books.
+Presented in a tabular format for easy reference.
+5. Email Reminder
+Administrators can utilize this feature to send email reminders to students before their book return due dates.
+Clicking the "Send Email Reminder" button triggers the email reminder functionality.

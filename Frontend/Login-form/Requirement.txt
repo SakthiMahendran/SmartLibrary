@@ -1,0 +1,5 @@
+Login Page:
+Provide options for users to choose between "Student" or "Staff" login.
+Upon selecting "Student," redirect them directly to the view section of the home page.
+For "Staff" login, prompt users to enter their username and password for authentication.
+Ensure proper validation for the staff login credentials before granting access.
