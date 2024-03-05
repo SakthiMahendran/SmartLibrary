@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"time"
 
-	//"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -43,12 +43,9 @@ func Connect(connectionString, dbName, collectionName string) (*MongoDBDriver, e
 	}, nil
 }
 
-func main() {
-	Connect("mongodb://localhost:27017", "SMLS", "Student")
 
-}
 
-/*func (m *MongoDBDriver) Disconnect() error {
+func (m *MongoDBDriver) Disconnect() error {
     ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
     defer cancel()
 
@@ -177,4 +174,4 @@ func (m *MongoDBDriver) FindTransactionsByStudentID(id string) ([]*Transaction, 
     }
 
     return transactions, nil
-}*/
+}
