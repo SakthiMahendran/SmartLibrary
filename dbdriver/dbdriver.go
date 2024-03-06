@@ -1,6 +1,6 @@
 package dbdriver
 
-import models "github.com/SakthiMahendran/SmartLibrary/dbdriver/Models"
+import models "github.com/SakthiMahendran/SmartLibrary/dbdriver/models"
 
 type DBDriver interface {
 	Connect() error

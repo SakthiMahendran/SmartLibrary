@@ -40,13 +40,13 @@ func (tc *TransactionController) UpdateTransactionDetails(bookID, studentRegNo s
 
 	// Update transaction details
 	transaction := &models.Transaction{
-		BookID:             bookID,
-		BookName:           book.BookName,
-		BookDepartment:     book.Department,
-		StudentName:        student.Name,
-		RegNo:              student.RegNo,
-		BorrowTimestamp:    book.DateOfBorrow,
-		DueDate:            book.DueDate,
+		BookID:         bookID,
+		BookName:       book.BookName,
+		BookDepartment: book.Department,
+		StudentName:    student.Name,
+		RegNo:          student.RegNo,
+		// BorrowTimestamp:    book.DateOfBorrow,
+		// DueDate:            book.DueDate,
 		MailID:             student.MailID,
 		StudentDepartment:  student.Department,
 		ReturnTimestamp:    time.Now(),
