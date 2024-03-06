@@ -1,0 +1,154 @@
+package main
+
+import (
+	"context"
+	"errors"
+	"fmt"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
+	"time"
+)
+
+// Define a struct to represent the MongoDB driver
+type MongoDBDriver[T any] struct {
+	client     *mongo.Client
+	collection *mongo.Collection
+	ctx        context.Context
+}
+
+// Implement the Connect method
+func (m *MongoDBDriver[T]) Connect() error {
+	client, err := mongo.NewClient(options.Client().ApplyURI("mongodb://localhost:27017"))
+	if err != nil {
+		return err
+	}
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	err = client.Connect(ctx)
+	if err != nil {
+		return err
+	}
+	m.client = client
+	m.collection = client.Database("mydb").Collection("mycollection")
+	m.ctx = ctx
+	return nil
+}
+
+// Implement the DisConnect method
+func (m *MongoDBDriver[T]) DisConnect() error {
+	if m.client != nil {
+		err := m.client.Disconnect(m.ctx)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+// Implement the Index method
+func (m *MongoDBDriver[T]) Index(idx int) *T {
+	return nil
+}
+
+// Implement the FindN method
+func (m *MongoDBDriver[T]) FindN(key T) *[]T {
+	return nil
+}
+
+// Implement the Find method
+func (m *MongoDBDriver[T]) Find(key T) *T {
+	var result T
+	filter := bson.M{"_id": key}
+	err := m.collection.FindOne(m.ctx, filter).Decode(&result)
+	if err != nil {
+		fmt.Println("Error:", err)
+		return nil
+	}
+	return &result
+}
+
+// Implement the Update method
+func (m *MongoDBDriver[T]) Update(key T, value T) error {
+	filter := bson.M{"_id": key}
+	update := bson.M{"$set": bson.M{"value": value}}
+	_, err := m.collection.UpdateOne(m.ctx, filter, update)
+	if err != nil {
+		fmt.Println("Error:", err)
+		return err
+	}
+	return nil
+}
+
+// Implement the Put method
+func (m *MongoDBDriver[T]) Put(value T) error {
+	_, err := m.collection.InsertOne(m.ctx, value)
+	if err != nil {
+		fmt.Println("Error:", err)
+		return err
+	}
+	return nil
+}
+
+// Implement the Delete method
+func (m *MongoDBDriver[T]) Delete(key T) error {
+	filter := bson.M{"_id": key}
+	_, err := m.collection.DeleteOne(m.ctx, filter)
+	if err != nil {
+		fmt.Println("Error:", err)
+		return err
+	}
+	return nil
+}
+
+// Implement the Count method
+func (m *MongoDBDriver[T]) Count() int {
+	count, err := m.collection.CountDocuments(m.ctx, bson.M{})
+	if err != nil {
+		fmt.Println("Error:", err)
+		return 0
+	}
+	return int(count)
+}
+
+// Implement the List method
+func (m *MongoDBDriver[T]) List() *[]T {
+	var results []T
+	cursor, err := m.collection.Find(m.ctx, bson.M{})
+	if err != nil {
+		fmt.Println("Error:", err)
+		return nil
+	}
+	defer cursor.Close(m.ctx)
+	for cursor.Next(m.ctx) {
+		var elem T
+		err := cursor.Decode(&elem)
+		if err != nil {
+			fmt.Println("Error:", err)
+			return nil
+		}
+		results = append(results, elem)
+	}
+	return &results
+}
+// Implement the ListN method
+func (m *MongoDBDriver[T]) ListN(limit int) *[]T {
+	var results []T
+	cursor, err := m.collection.Find(m.ctx, bson.M{}, options.Find().SetLimit(int64(limit)))
+	if err != nil {
+		fmt.Println("Error:", err)
+		return nil
+	}
+	defer cursor.Close(m.ctx)
+	for cursor.Next(m.ctx) {
+		var elem T
+		err := cursor.Decode(&elem)
+		if err != nil {
+			fmt.Println("Error:", err)
+			return nil
+		}
+		results = append(results, elem)
+	}
+	return &results
+}
+
