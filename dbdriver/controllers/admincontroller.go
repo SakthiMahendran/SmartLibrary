@@ -14,6 +14,12 @@ func NewAdminController(client *mongo.Client, dbName, adminCollectionName string
 	return nil
 }
 
+func (ac *AdminController) DeleteAdmin(oldAdmin *models.Admin, userName, passWord string) error {
+	//Authenticate
+	//Delete old admin
+	return nil
+}
+
 func (ac *AdminController) CreateAdmin(newAdmin *models.Admin) error {
 	return nil
 }
