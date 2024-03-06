@@ -1,18 +1,19 @@
 package models
 
-import "time"
+import (
+    "time"
+    "go.mongodb.org/mongo-driver/bson/primitive"
+)
 
 type Student struct {
-    Timestamp      time.Time `bson:"timestamp"`
-    Name           string    `bson:"name"`
-    RegNo          string    `bson:"reg_no"`
-    RollNo         int       `bson:"roll_no"`
-    DOB            time.Time `bson:"dob"`
-    Department     string    `bson:"stu_department"`
-    MailID         string    `bson:"mail_id"`
-    PhoneNumber    string    `bson:"phone_no"`
-    YearOfJoining  int       `bson:"year_of_joining"`
-    YearOfPassing  int       `bson:"year_of_passing"`
-    DateOfBorrow   time.Time `bson:"date_of_borrow"`
-    DueDate        time.Time `bson:"due_date"`
+    ID            primitive.ObjectID `bson:"_id,omitempty"`
+    RegNo         string             `bson:"reg_no"`
+    Dob           time.Time          `bson:"dob"`
+    StudentName   string             `bson:"student_name"`
+    Mail          string             `bson:"mail"`
+    PhoneNo       string             `bson:"phone_no"`
+    YearOfJoining time.Time          `bson:"year_of_joining"`
+    YearOfPassing time.Time          `bson:"year_of_passing"`
+    Department    string             `bson:"department"`
 }
+

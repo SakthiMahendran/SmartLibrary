@@ -2,8 +2,8 @@ package main
 
 import (
 	"github.com/SakthiMahendran/SmartLibrary/dbdriver"
-	"github.com/SakthiMahendran/SmartLibrary/dbdriver/controller"
 	"github.com/SakthiMahendran/SmartLibrary/server"
+	"github.com/SakthiMahendran/SmartLibrary/server/controller"
 )
 
 func main() {

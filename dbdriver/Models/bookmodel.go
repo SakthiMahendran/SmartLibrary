@@ -1,12 +1,9 @@
 package models
 
-import "time"
+import "go.mongodb.org/mongo-driver/bson/primitive"
 
 type Book struct {
-    Timestamp      time.Time `bson:"timestamp"`
-    BookID         string    `bson:"book_id"`
-    BookName       string    `bson:"book_name"`
-    BookStatus     string    `bson:"book_status"`
-    Department     string    `bson:"book_department"`
-    Remarks        string    `bson:"remarks"`
+	ID                primitive.ObjectID `bson:"_id,omitempty"`
+	BookID            string             `bson:"book_id"`
+	BookInventoryPtr *BookInventory     `bson:"book_inventory_ptr"`
 }
