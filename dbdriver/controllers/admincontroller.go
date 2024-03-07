@@ -3,6 +3,8 @@ package controllers
 import (
 	"context"
 	"errors"
+	"fmt"
+
 	"github.com/SakthiMahendran/SmartLibrary/dbdriver/models"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -41,16 +43,18 @@ func (ac *AdminController) DeleteAdmin(authAdmin *models.Admin, targetUserName, 
 	return nil
 }
 
-/*func (ac *AdminController) DeleteAdmin(oldAdmin *models.Admin, userName, passWord string) error {
-	if !ac.Auth(userName, passWord) {
-		return errors.New("authentication failed")
+/*
+	func (ac *AdminController) DeleteAdmin(oldAdmin *models.Admin, userName, passWord string) error {
+		if !ac.Auth(userName, passWord) {
+			return errors.New("authentication failed")
+		}
+		_, err := ac.db.Collection(ac.adminCollectionName).DeleteOne(context.TODO(), bson.M{"_id": oldAdmin.ID})
+		if err != nil {
+			return err
+		}
+		return nil
 	}
-	_, err := ac.db.Collection(ac.adminCollectionName).DeleteOne(context.TODO(), bson.M{"_id": oldAdmin.ID})
-	if err != nil {
-		return err
-	}
-	return nil
-}*/
+*/
 func (ac *AdminController) CreateAdmin(oldAdmin *models.Admin, newUsername, newPassword string) error {
 	if !ac.Auth(oldAdmin.Username, oldAdmin.Password) {
 		return errors.New("authentication failed for old admin")
@@ -68,14 +72,6 @@ func (ac *AdminController) CreateAdmin(oldAdmin *models.Admin, newUsername, newP
 	return nil
 }
 
-/*func (ac *AdminController) CreateAdmin(newAdmin *models.Admin) error {
-	_, err := ac.db.Collection(ac.adminCollectionName).InsertOne(context.TODO(), newAdmin)
-	if err != nil {
-		return err
-	}
-
-	return nil
-}*/
 
 func (ac *AdminController) Auth(userName, passWord string) bool {
 	admin := &models.Admin{}
@@ -85,13 +81,18 @@ func (ac *AdminController) Auth(userName, passWord string) bool {
 
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
+			fmt.Println("Admin not found")
 			return false
 		}
-		return false
-	}
-	if admin.Password != passWord {
+		fmt.Println("Error while finding admin:", err)
 		return false
 	}
 
+	if admin.Password != passWord {
+		fmt.Println("Incorrect password")
+		return false
+	}
+
+	fmt.Println("Authentication successful")
 	return true
 }
