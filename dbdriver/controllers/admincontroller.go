@@ -55,10 +55,11 @@ func (ac *AdminController) DeleteAdmin(authAdmin *models.Admin, targetUserName, 
 		return nil
 	}
 */
-func (ac *AdminController) CreateAdmin(oldAdmin *models.Admin, newUsername, newPassword string) error {
-	if !ac.Auth(oldAdmin.Username, oldAdmin.Password) {
+func (ac *AdminController) CreateAdmin(oldUserName, oldPassword, newUsername, newPassword string) error {
+	if !ac.Auth(oldUserName, oldPassword) {
 		return errors.New("authentication failed for old admin")
 	}
+
 	newAdmin := &models.Admin{
 		Username: newUsername,
 		Password: newPassword,
@@ -71,7 +72,6 @@ func (ac *AdminController) CreateAdmin(oldAdmin *models.Admin, newUsername, newP
 
 	return nil
 }
-
 
 func (ac *AdminController) Auth(userName, passWord string) bool {
 	admin := &models.Admin{}
