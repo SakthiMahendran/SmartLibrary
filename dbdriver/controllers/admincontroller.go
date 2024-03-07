@@ -21,8 +21,8 @@ func NewAdminController(client *mongo.Client, dbName, adminCollectionName string
 		adminCollectionName: adminCollectionName,
 	}
 }
-func (ac *AdminController) DeleteAdmin(authAdmin *models.Admin, targetUserName, targetPassword string) error {
-	if !ac.Auth(authAdmin.Username, authAdmin.Password) {
+func (ac *AdminController) DeleteAdmin(authAdminUsername, authAdminPassword, targetUserName, targetPassword string) error {
+	if !ac.Auth(authAdminUsername, authAdminPassword) {
 		return errors.New("authentication failed")
 	}
 	if !ac.Auth(targetUserName, targetPassword) {
