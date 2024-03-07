@@ -32,3 +32,11 @@ func (bc *BookInventoryController) FindCategory(category *models.Book) *[]models
 func (bc *BookInventoryController) IsAvailable(bookName string) bool {
 
 }
+
+func (bc *BookInventoryController) Borrow(book *models.Book, student *models.Student) error {
+
+}
+
+func (bc *BookInventoryController) Return(book *models.Book, student *models.Student) error {
+
+}
