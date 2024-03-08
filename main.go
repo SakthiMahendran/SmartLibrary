@@ -3,36 +3,11 @@ package main
 import (
 	"context"
 	"fmt"
-	"log"
 
 	"github.com/SakthiMahendran/SmartLibrary/dbdriver/controllers"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
-
-func connectMongoDB() (*mongo.Client, error) {
-	// Set MongoDB connection string
-	connectionString := "mongodb://localhost:27017"
-
-	// Set client options
-	clientOptions := options.Client().ApplyURI(connectionString)
-
-	// Connect to MongoDB
-	client, err := mongo.Connect(context.Background(), clientOptions)
-	if err != nil {
-		return nil, err
-	}
-
-	// Ping the MongoDB server to check the connection
-	err = client.Ping(context.Background(), nil)
-	if err != nil {
-		return nil, err
-	}
-
-	fmt.Println("Connected to MongoDB!")
-
-	return client, nil
-}
 
 func main() {
 	// dbdriver.Nothing()
@@ -122,7 +97,7 @@ func main() {
 
 	log.Println("UpdateBook function executed successfully")*/
 
-	client, err := connectMongoDB()
+	/*client, err := connectMongoDB()
 	if err != nil {
 		log.Fatal("Error connecting to MongoDB:", err)
 	}
@@ -144,5 +119,112 @@ func main() {
 		log.Fatal("Error deleting book:", err)
 	}
 
-	fmt.Println("Book deleted successfully!")
+	fmt.Println("Book deleted successfully!")*/
+
+	/*clientOptions := options.Client().ApplyURI("mongodb://localhost:27017")
+	client, err := mongo.Connect(context.Background(), clientOptions)
+	if err != nil {
+		fmt.Println("Error connecting to MongoDB:", err)
+		return
+	}
+	defer func() {
+		if err := client.Disconnect(context.Background()); err != nil {
+			fmt.Println("Error disconnecting from MongoDB:", err)
+		}
+	}()
+
+	// Initialize controller
+	controller := controllers.BookInventoryController{Client: client}
+
+	// Test GetBookCount function
+	bookName := "updated sample book" // Example book name
+	count, err := controller.GetBookCount(bookName)
+	if err != nil {
+		fmt.Println("Error fetching book count:", err)
+		return
+	}
+	fmt.Printf("Count of '%s' in inventory: %d\n", bookName, count)*/
+	/*clientOptions := options.Client().ApplyURI("mongodb://localhost:27017")
+	client, err := mongo.Connect(context.Background(), clientOptions)
+	if err != nil {
+		fmt.Println("Error connecting to MongoDB:", err)
+		return
+	}
+	defer func() {
+		if err := client.Disconnect(context.Background()); err != nil {
+			fmt.Println("Error disconnecting from MongoDB:", err)
+		}
+	}()
+
+	// Initialize controller
+	controller := controllers.BookInventoryController{Client: client}
+
+	// Test GetCategoryCount function
+	department := "updated fake department" // Example department
+	count, err := controller.GetCategoryCount(department)
+	if err != nil {
+		fmt.Println("Error fetching category count:", err)
+		return
+	}
+	fmt.Printf("Count of books in '%s' department: %d\n", department, count)*/
+	/*
+		// Set up MongoDB client
+		clientOptions := options.Client().ApplyURI("mongodb://localhost:27017")
+		client, err := mongo.Connect(context.Background(), clientOptions)
+		if err != nil {
+			fmt.Println("Error connecting to MongoDB:", err)
+			return
+		}
+		defer func() {
+			if err := client.Disconnect(context.Background()); err != nil {
+				fmt.Println("Error disconnecting from MongoDB:", err)
+			}
+		}()
+
+		// Initialize controller
+		controller := controllers.BookInventoryController{Client: client}
+
+		// Test FindCategory function
+		department := "updated fake department" // Example department
+		books, err := controller.FindCategory(department)
+		if err != nil {
+			fmt.Println("Error fetching books by category:", err)
+			return
+		}
+		fmt.Println(books)
+
+		// Print found books
+		fmt.Printf("Books in '%s' department:\n", department)
+		for _, book := range books {
+			fmt.Printf("Book Name: %s, Author: %s\n", book.BookName, book.Author)
+		}*/
+
+	clientOptions := options.Client().ApplyURI("mongodb://localhost:27017")
+	client, err := mongo.Connect(context.Background(), clientOptions)
+	if err != nil {
+		fmt.Println("Error connecting to MongoDB:", err)
+		return
+	}
+	defer func() {
+		if err := client.Disconnect(context.Background()); err != nil {
+			fmt.Println("Error disconnecting from MongoDB:", err)
+		}
+	}()
+
+	// Initialize controller
+	controller := controllers.BookInventoryController{Client: client}
+
+	// Test IsAvailable function
+	bookName := "updated sample book" // Example book name
+	available, err := controller.IsAvailable(bookName)
+	if err != nil {
+		fmt.Println("Error checking book availability:", err)
+		return
+	}
+
+	if available {
+		fmt.Printf("Book '%s' is available!\n", bookName)
+	} else {
+		fmt.Printf("Book '%s' is not available!\n", bookName)
+	}
 }

@@ -186,61 +186,80 @@ func (bc *BookInventoryController) DeleteBook(bookID string) error {
 }
 
 func (bc *BookInventoryController) GetBookCount(bookName string) (int, error) {
-	// Get count of books by name
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	inventoryCollection := bc.Client.Database("library").Collection("book_inventory")
+	inventoryCollection := bc.Client.Database("SMLS").Collection("BookInventory")
 
+	var bookInventory models.BookInventory
 	filter := bson.M{"book_name": bookName}
-	count, err := inventoryCollection.CountDocuments(ctx, filter)
+	err := inventoryCollection.FindOne(ctx, filter).Decode(&bookInventory)
 	if err != nil {
 		return 0, err
 	}
 
-	return int(count), nil
+	return bookInventory.Count, nil
 }
 
-func (bc *BookInventoryController) GetCategoryCount(category string) (int, error) {
-	// Get count of books by category
+func (bc *BookInventoryController) GetCategoryCount(department string) (int, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	inventoryCollection := bc.Client.Database("library").Collection("book_inventory")
+	inventoryCollection := bc.Client.Database("SMLS").Collection("BookInventory")
 
-	filter := bson.M{"book_dept": category}
-	count, err := inventoryCollection.CountDocuments(ctx, filter)
+	cursor, err := inventoryCollection.Find(ctx, bson.M{"book_dept": department})
 	if err != nil {
 		return 0, err
 	}
+	defer cursor.Close(ctx)
 
-	return int(count), nil
+	var totalCount int
+	for cursor.Next(ctx) {
+		var bookInventory models.BookInventory
+		if err := cursor.Decode(&bookInventory); err != nil {
+			return 0, err
+		}
+		totalCount += bookInventory.Count
+	}
+	if err := cursor.Err(); err != nil {
+		return 0, err
+	}
+
+	return totalCount, nil
 }
 
-func (bc *BookInventoryController) FindCategory(category string) ([]models.BookInventory, error) {
-	// Find books by category
+func (bc *BookInventoryController) FindCategory(department string) ([]models.BookInventory, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	inventoryCollection := bc.Client.Database("library").Collection("book_inventory")
+	inventoryCollection := bc.Client.Database("SMLS").Collection("BookInventory")
 
-	filter := bson.M{"book_dept": category}
-	cursor, err := inventoryCollection.Find(ctx, filter)
+	cursor, err := inventoryCollection.Find(ctx, bson.M{"book_dept": department})
 	if err != nil {
 		return nil, err
 	}
 	defer cursor.Close(ctx)
 
 	var books []models.BookInventory
-	if err := cursor.All(ctx, &books); err != nil {
+	for cursor.Next(ctx) {
+		var bookInventory models.BookInventory
+		if err := cursor.Decode(&bookInventory); err != nil {
+			return nil, err
+		}
+		books = append(books, bookInventory)
+	}
+	if err := cursor.Err(); err != nil {
 		return nil, err
+	}
+
+	if len(books) == 0 {
+		return nil, fmt.Errorf("no books found for department %s", department)
 	}
 
 	return books, nil
 }
 
 func (bc *BookInventoryController) IsAvailable(bookName string) (bool, error) {
-	// Check if book is available
 	count, err := bc.GetBookCount(bookName)
 	if err != nil {
 		return false, err
