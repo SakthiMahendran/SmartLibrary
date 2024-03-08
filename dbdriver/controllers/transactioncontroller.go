@@ -1,15 +1,9 @@
 package controllers
 
-import (
-	"time"
-
-	"github.com/SakthiMahendran/SmartLibrary/dbdriver/models"
-)
-
-type TransctionController struct {
+type TransactionController struct {
 }
 
-func (tc *TransctionController) FindStudentTransactions(student *models.Student) *[]models.Transaction {
+/*func (tc *TransctionController) FindStudentTransactions(student *models.Student) *[]models.Transaction {
 
 }
 
@@ -19,4 +13,4 @@ func (tc *TransctionController) FindBookTransactions(student *models.Book) *[]mo
 
 func (tc *TransctionController) FindDuedTransactions(dueDate time.Time) *[]models.Transaction {
 
-}
+}*/
