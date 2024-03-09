@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"log"
 
 	"github.com/SakthiMahendran/SmartLibrary/dbdriver/controllers"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -199,7 +200,7 @@ func main() {
 			fmt.Printf("Book Name: %s, Author: %s\n", book.BookName, book.Author)
 		}*/
 
-	clientOptions := options.Client().ApplyURI("mongodb://localhost:27017")
+	/*clientOptions := options.Client().ApplyURI("mongodb://localhost:27017")
 	client, err := mongo.Connect(context.Background(), clientOptions)
 	if err != nil {
 		fmt.Println("Error connecting to MongoDB:", err)
@@ -226,5 +227,62 @@ func main() {
 		fmt.Printf("Book '%s' is available!\n", bookName)
 	} else {
 		fmt.Printf("Book '%s' is not available!\n", bookName)
+	}*/
+
+	/*client, err := mongo.NewClient(options.Client().ApplyURI("mongodb://localhost:27017"))
+	if err != nil {
+		fmt.Println("Error creating MongoDB client:", err)
+		return
 	}
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	err = client.Connect(ctx)
+	if err != nil {
+		fmt.Println("Error connecting to MongoDB:", err)
+		return
+	}
+
+	// Initialize BookInventoryController
+	bc := &controllers.BookInventoryController{
+		Client: client,
+	}
+
+	// Simulate a book borrowing transaction
+	bookID := "78hh"
+	studentRegNo := "GHI789"
+	err = bc.Borrow(bookID, studentRegNo)
+	if err != nil {
+		fmt.Println("Error borrowing book:", err)
+		return
+	}
+
+	fmt.Println("Book borrowed successfully!")*/
+	clientOptions := options.Client().ApplyURI("mongodb://localhost:27017")
+	client, err := mongo.Connect(context.Background(), clientOptions)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer func() {
+		if err = client.Disconnect(context.Background()); err != nil {
+			log.Fatal(err)
+		}
+	}()
+
+	// Create BookInventoryController instance
+	bc := controllers.BookInventoryController{
+		Client: client,
+	}
+
+	// Sample book and student data
+	bookID := "78hh"         // Sample book ID
+	studentRegNo := "GHI789" // Sample student registration number
+
+	// Test Return function
+	err = bc.Return(bookID, studentRegNo)
+	if err != nil {
+		fmt.Println("Error returning book:", err)
+		return
+	}
+
+	fmt.Println("Book returned successfully!")
 }
