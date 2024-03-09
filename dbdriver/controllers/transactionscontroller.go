@@ -13,7 +13,7 @@ type TransactionController struct {
 	Client *mongo.Client
 }
 
-func (tc *TransactionController) FindStudentTransactions(studentRegNo string) ([]models.Transaction, error) {
+func (tc *TransactionController) FindStudentTransactions(studentRegNo string) ([]models.Transactions, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
@@ -33,7 +33,7 @@ func (tc *TransactionController) FindStudentTransactions(studentRegNo string) ([
 	}
 	defer cursor.Close(ctx)
 
-	var transactions []models.Transaction
+	var transactions []models.Transactions
 	err = cursor.All(ctx, &transactions)
 	if err != nil {
 		return nil, err
@@ -42,7 +42,7 @@ func (tc *TransactionController) FindStudentTransactions(studentRegNo string) ([
 	return transactions, nil
 }
 
-func (tc *TransactionController) FindBookTransactions(bookID string) ([]models.Transaction, error) {
+func (tc *TransactionController) FindBookTransactions(bookID string) ([]models.Transactions, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
@@ -61,7 +61,7 @@ func (tc *TransactionController) FindBookTransactions(bookID string) ([]models.T
 	}
 	defer cursor.Close(ctx)
 
-	var transactions []models.Transaction
+	var transactions []models.Transactions
 	if err := cursor.All(ctx, &transactions); err != nil {
 		return nil, err
 	}
@@ -69,7 +69,7 @@ func (tc *TransactionController) FindBookTransactions(bookID string) ([]models.T
 	return transactions, nil
 }
 
-func (tc *TransactionController) FindDuedTransactions() ([]models.Transaction, error) {
+func (tc *TransactionController) FindDuedTransactions() ([]models.Transactions, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
@@ -86,7 +86,7 @@ func (tc *TransactionController) FindDuedTransactions() ([]models.Transaction, e
 	}
 	defer cursor.Close(ctx)
 
-	var transactions []models.Transaction
+	var transactions []models.Transactions
 	err = cursor.All(ctx, &transactions)
 	if err != nil {
 		return nil, err
