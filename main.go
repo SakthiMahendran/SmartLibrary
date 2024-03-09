@@ -1,15 +1,5 @@
 package main
 
-import (
-	"context"
-	"fmt"
-	"log"
-
-	"github.com/SakthiMahendran/SmartLibrary/dbdriver/controllers"
-	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
-)
-
 func main() {
 	// dbdriver.Nothing()
 	// controller.Nothing()
@@ -257,7 +247,7 @@ func main() {
 	}
 
 	fmt.Println("Book borrowed successfully!")*/
-	clientOptions := options.Client().ApplyURI("mongodb://localhost:27017")
+	/*clientOptions := options.Client().ApplyURI("mongodb://localhost:27017")
 	client, err := mongo.Connect(context.Background(), clientOptions)
 	if err != nil {
 		log.Fatal(err)
@@ -284,5 +274,78 @@ func main() {
 		return
 	}
 
-	fmt.Println("Book returned successfully!")
+	fmt.Println("Book returned successfully!")*/
+	/*client, err := mongo.NewClient(options.Client().ApplyURI("mongodb://localhost:27017"))
+	if err != nil {
+		fmt.Println("Error connecting to MongoDB:", err)
+		return
+	}
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	err = client.Connect(ctx)
+	if err != nil {
+		fmt.Println("Error connecting to MongoDB:", err)
+		return
+	}
+	defer client.Disconnect(ctx)
+
+	// Create a TransactionController instance
+	transController := controllers.TransactionController{Client: client}
+
+	// Example student registration number
+	studentRegNo := "GHI789"
+
+	// Find transactions for the student
+	transactions, err := transController.FindStudentTransactions(studentRegNo)
+	if err != nil {
+		fmt.Println("Error finding student transactions:", err)
+		return
+	}
+
+	// Print the transactions
+	fmt.Println(transactions)*/
+	/*clientOptions := options.Client().ApplyURI("mongodb://localhost:27017")
+	client, err := mongo.Connect(context.Background(), clientOptions)
+	if err != nil {
+		fmt.Println("Error connecting to MongoDB:", err)
+		return
+	}
+	defer client.Disconnect(context.Background())
+
+	// Create a new instance of the TransactionController
+	tc := &controllers.TransactionController{Client: client}
+
+	// Provide a book ID to find transactions for
+	bookID := "78hh" // Replace with a valid book ID
+
+	// Call the FindBookTransactions function
+	transactions, err := tc.FindBookTransactions(bookID)
+	if err != nil {
+		fmt.Println("Error finding book transactions:", err)
+		return
+	}
+
+	// Print the found transactions
+	fmt.Println(transactions)*/
+	/*clientOptions := options.Client().ApplyURI("mongodb://localhost:27017")
+	client, err := mongo.Connect(context.Background(), clientOptions)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer client.Disconnect(context.Background())
+
+	// Initialize TransactionController
+	tc := controllers.TransactionController{
+		Client: client,
+	}
+
+	// Test FindDuedTransactions function
+	transactions, err := tc.FindDuedTransactions()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// Print the found transactions
+	fmt.Println(transactions)*/
+
 }
