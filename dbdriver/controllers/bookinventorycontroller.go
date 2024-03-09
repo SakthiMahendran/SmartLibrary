@@ -12,39 +12,47 @@ import (
 )
 
 type BookInventoryController struct {
-	Client *mongo.Client
+	client                 *mongo.Client
+	inventoryDatabase      *mongo.Database
+	booksCollection        *mongo.Collection
+	inventoryCollection    *mongo.Collection
+	transactionsCollection *mongo.Collection
+	studentsCollection     *mongo.Collection
 }
 
 func NewBookInventoryController(client *mongo.Client) *BookInventoryController {
-	return &BookInventoryController{Client: client}
+	db := client.Database(dbName)
+	return &BookInventoryController{
+		client:                 client,
+		inventoryDatabase:      db,
+		booksCollection:        db.Collection(bookCollectionName),
+		inventoryCollection:    db.Collection(bookInventoryCollectionName),
+		transactionsCollection: db.Collection(transactionsCollection),
+		studentsCollection:     db.Collection(studentCollectionName),
+	}
 }
 
 func (bc *BookInventoryController) AddBook(bookID, bookName, author, bookDept string) (string, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	inventoryCollection := bc.Client.Database("SMLS").Collection("BookInventory")
-	booksCollection := bc.Client.Database("SMLS").Collection("Books")
-
 	filter := bson.M{"book_id": bookID}
 	var existingBook models.Book
-	err := booksCollection.FindOne(ctx, filter).Decode(&existingBook)
+	err := bc.booksCollection.FindOne(ctx, filter).Decode(&existingBook)
 	if err == nil {
 		return fmt.Sprintf("Book with ID %s already exists", bookID), nil
 	}
 
 	filter = bson.M{"book_name": bookName}
 	var existingInventory models.BookInventory
-	err = inventoryCollection.FindOne(ctx, filter).Decode(&existingInventory)
+	err = bc.inventoryCollection.FindOne(ctx, filter).Decode(&existingInventory)
 	if err == nil {
-
 		update := bson.M{"$inc": bson.M{"count": 1}}
-		_, err := inventoryCollection.UpdateOne(ctx, filter, update)
+		_, err := bc.inventoryCollection.UpdateOne(ctx, filter, update)
 		if err != nil {
 			return "", err
 		}
 	} else if err == mongo.ErrNoDocuments {
-
 		newInventory := models.BookInventory{
 			BookName:  bookName,
 			Author:    author,
@@ -52,7 +60,7 @@ func (bc *BookInventoryController) AddBook(bookID, bookName, author, bookDept st
 			AddedDate: time.Now(),
 			Count:     1,
 		}
-		_, err := inventoryCollection.InsertOne(ctx, newInventory)
+		_, err := bc.inventoryCollection.InsertOne(ctx, newInventory)
 		if err != nil {
 			return "", err
 		}
@@ -71,12 +79,12 @@ func (bc *BookInventoryController) AddBook(bookID, bookName, author, bookDept st
 			Count:     1,
 		},
 	}
-	_, err = booksCollection.InsertOne(ctx, newBook)
+	_, err = bc.booksCollection.InsertOne(ctx, newBook)
 	if err != nil {
 		return "", err
 	}
 
-	_, err = booksCollection.UpdateMany(ctx, bson.M{}, bson.M{"$set": bson.M{"book_inventory_ptr": newBook.BookInventoryPtr}})
+	_, err = bc.booksCollection.UpdateMany(ctx, bson.M{}, bson.M{"$set": bson.M{"book_inventory_ptr": newBook.BookInventoryPtr}})
 	if err != nil {
 		return "", err
 	}
@@ -88,11 +96,9 @@ func (bc *BookInventoryController) UpdateBook(presentData, toBeUpdatedData *mode
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	inventoryCollection := bc.Client.Database("SMLS").Collection("BookInventory")
-	booksCollection := bc.Client.Database("SMLS").Collection("Books")
 	filter := bson.M{"book_name": presentData.BookName}
 	var existingInventory models.BookInventory
-	err := inventoryCollection.FindOne(ctx, filter).Decode(&existingInventory)
+	err := bc.inventoryCollection.FindOne(ctx, filter).Decode(&existingInventory)
 	if err != nil {
 		return err
 	}
@@ -113,18 +119,18 @@ func (bc *BookInventoryController) UpdateBook(presentData, toBeUpdatedData *mode
 		updateFields["count"] = toBeUpdatedData.Count
 	}
 	update := bson.M{"$set": updateFields}
-	_, err = inventoryCollection.UpdateOne(ctx, filter, update)
+	_, err = bc.inventoryCollection.UpdateOne(ctx, filter, update)
 	if err != nil {
 		return err
 	}
 	var updatedInventory models.BookInventory
-	err = inventoryCollection.FindOne(ctx, filter).Decode(&updatedInventory)
+	err = bc.inventoryCollection.FindOne(ctx, filter).Decode(&updatedInventory)
 	if err != nil {
 		return err
 	}
 
 	filter = bson.M{"book_inventory_ptr.book_name": existingInventory.BookName}
-	_, err = booksCollection.UpdateMany(ctx, filter, bson.M{"$set": bson.M{"book_inventory_ptr": updatedInventory}})
+	_, err = bc.booksCollection.UpdateMany(ctx, filter, bson.M{"$set": bson.M{"book_inventory_ptr": updatedInventory}})
 	if err != nil {
 		return err
 	}
@@ -133,51 +139,39 @@ func (bc *BookInventoryController) UpdateBook(presentData, toBeUpdatedData *mode
 }
 
 func (bc *BookInventoryController) DeleteBook(bookID string) error {
-	// Delete book and update inventory
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	inventoryCollection := bc.Client.Database("SMLS").Collection("BookInventory")
-	booksCollection := bc.Client.Database("SMLS").Collection("Books")
-
-	// Search for book by book_id in the books collection
 	filter := bson.M{"book_id": bookID}
 	var book models.Book
-	err := booksCollection.FindOne(ctx, filter).Decode(&book)
+	err := bc.booksCollection.FindOne(ctx, filter).Decode(&book)
 	if err != nil {
-		// Book not found, return error
 		fmt.Println("Book not present")
 		return err
 	}
 
-	// Fetch the book name from the book inventory pointer
 	bookName := book.BookInventoryPtr.BookName
 
-	// Delete book from books collection
-	_, err = booksCollection.DeleteOne(ctx, filter)
+	_, err = bc.booksCollection.DeleteOne(ctx, filter)
 	if err != nil {
 		return err
 	}
 
-	// Search for the book in the book inventory by book name and update count
 	filter = bson.M{"book_name": bookName}
 	update := bson.M{"$inc": bson.M{"count": -1}}
-	_, err = inventoryCollection.UpdateOne(ctx, filter, update)
+	_, err = bc.inventoryCollection.UpdateOne(ctx, filter, update)
 	if err != nil {
 		return err
 	}
 
-	// Fetch the updated book inventory data
 	var updatedInventory models.BookInventory
-	err = inventoryCollection.FindOne(ctx, filter).Decode(&updatedInventory)
+	err = bc.inventoryCollection.FindOne(ctx, filter).Decode(&updatedInventory)
 	if err != nil {
 		return err
 	}
 
-	// Reflect changes in the Books collection
-	// Update the corresponding documents in the Books collection
 	filter = bson.M{"book_inventory_ptr.book_name": bookName}
-	_, err = booksCollection.UpdateMany(ctx, filter, bson.M{"$set": bson.M{"book_inventory_ptr": updatedInventory}})
+	_, err = bc.booksCollection.UpdateMany(ctx, filter, bson.M{"$set": bson.M{"book_inventory_ptr": updatedInventory}})
 	if err != nil {
 		return err
 	}
@@ -189,11 +183,9 @@ func (bc *BookInventoryController) GetBookCount(bookName string) (int, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	inventoryCollection := bc.Client.Database("SMLS").Collection("BookInventory")
-
 	var bookInventory models.BookInventory
 	filter := bson.M{"book_name": bookName}
-	err := inventoryCollection.FindOne(ctx, filter).Decode(&bookInventory)
+	err := bc.inventoryCollection.FindOne(ctx, filter).Decode(&bookInventory)
 	if err != nil {
 		return 0, err
 	}
@@ -205,9 +197,7 @@ func (bc *BookInventoryController) GetCategoryCount(department string) (int, err
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	inventoryCollection := bc.Client.Database("SMLS").Collection("BookInventory")
-
-	cursor, err := inventoryCollection.Find(ctx, bson.M{"book_dept": department})
+	cursor, err := bc.inventoryCollection.Find(ctx, bson.M{"book_dept": department})
 	if err != nil {
 		return 0, err
 	}
@@ -232,9 +222,7 @@ func (bc *BookInventoryController) FindCategory(department string) ([]models.Boo
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	inventoryCollection := bc.Client.Database("SMLS").Collection("BookInventory")
-
-	cursor, err := inventoryCollection.Find(ctx, bson.M{"book_dept": department})
+	cursor, err := bc.inventoryCollection.Find(ctx, bson.M{"book_dept": department})
 	if err != nil {
 		return nil, err
 	}
@@ -271,39 +259,47 @@ func (bc *BookInventoryController) Borrow(bookID, studentRegNo string) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	booksCollection := bc.Client.Database("SMLS").Collection("Books")
-	inventoryCollection := bc.Client.Database("SMLS").Collection("BookInventory")
-	transactionsCollection := bc.Client.Database("SMLS").Collection("Transaction")
-	studentCollection := bc.Client.Database("SMLS").Collection("Students")
+	booksCollection := bc.booksCollection
+	inventoryCollection := bc.inventoryCollection
+	transactionsCollection := bc.transactionsCollection
+	studentCollection := bc.studentsCollection
 
-	bookFilter := bson.M{"book_id": bookID, "book_status": true}
+	// Check if the book is available for borrowing
+	filter := bson.M{"book_id": bookID, "book_status": true}
 	var book models.Book
-	err := booksCollection.FindOne(ctx, bookFilter).Decode(&book)
+	err := booksCollection.FindOne(ctx, filter).Decode(&book)
 	if err != nil {
 		return errors.New("book is not available for borrowing")
 	}
 
+	// Update book status to unavailable
 	bookUpdate := bson.M{"$set": bson.M{"book_status": false}}
-	_, err = booksCollection.UpdateOne(ctx, bookFilter, bookUpdate)
+	_, err = booksCollection.UpdateOne(ctx, filter, bookUpdate)
 	if err != nil {
 		return err
 	}
 
-	inventoryFilter := bson.M{"book_name": book.BookInventoryPtr.BookName}
+	// Decrement book count in inventory
+	bookName := book.BookInventoryPtr.BookName
+	inventoryFilter := bson.M{"book_name": bookName}
 	inventoryUpdate := bson.M{"$inc": bson.M{"count": -1}}
 	_, err = inventoryCollection.UpdateOne(ctx, inventoryFilter, inventoryUpdate)
 	if err != nil {
 		return err
 	}
 
+	// Retrieve student information
 	var student models.Student
 	err = studentCollection.FindOne(ctx, bson.M{"reg_no": studentRegNo}).Decode(&student)
 	if err != nil {
 		return err
 	}
+
+	// Calculate due date (15 days from now)
 	dueDate := time.Now().AddDate(0, 0, 15)
 
-	transaction := models.Transaction{
+	// Create transaction record
+	transaction := models.Transactions{
 		StudentPtr: &student.ID,
 		BookPtr:    &book.ID,
 		BorrowDate: time.Now(),
@@ -322,24 +318,27 @@ func (bc *BookInventoryController) Return(bookID, studentRegNo string) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	booksCollection := bc.Client.Database("SMLS").Collection("Books")
-	inventoryCollection := bc.Client.Database("SMLS").Collection("BookInventory")
-	transactionsCollection := bc.Client.Database("SMLS").Collection("Transaction")
-	studentCollection := bc.Client.Database("SMLS").Collection("Students")
+	booksCollection := bc.booksCollection
+	inventoryCollection := bc.inventoryCollection
+	transactionsCollection := bc.transactionsCollection
+	studentCollection := bc.studentsCollection
 
+	// Find the book by ID
 	var book models.Book
 	err := booksCollection.FindOne(ctx, bson.M{"book_id": bookID}).Decode(&book)
 	if err != nil {
 		return err
 	}
 
+	// Find the student by registration number
 	var student models.Student
 	err = studentCollection.FindOne(ctx, bson.M{"reg_no": studentRegNo}).Decode(&student)
 	if err != nil {
 		return err
 	}
 
-	var transaction models.Transaction
+	// Find the transaction record
+	var transaction models.Transactions
 	err = transactionsCollection.FindOne(ctx, bson.M{
 		"book_ptr":    book.ID,
 		"student_ptr": student.ID,
@@ -347,6 +346,8 @@ func (bc *BookInventoryController) Return(bookID, studentRegNo string) error {
 	if err != nil {
 		return err
 	}
+
+	// Update the transaction record with return date
 	_, err = transactionsCollection.UpdateOne(ctx,
 		bson.M{"_id": transaction.ID},
 		bson.M{"$set": bson.M{"return_date": time.Now()}},
@@ -354,25 +355,24 @@ func (bc *BookInventoryController) Return(bookID, studentRegNo string) error {
 	if err != nil {
 		return err
 	}
+
+	// Update book status to available
+	bookUpdate := bson.M{"$set": bson.M{"book_status": true}}
 	_, err = booksCollection.UpdateOne(ctx,
 		bson.M{"_id": book.ID},
-		bson.M{"$set": bson.M{"book_status": true}},
+		bookUpdate,
 	)
 	if err != nil {
 		return err
 	}
 
-	var bookInventory models.BookInventory
-	err = inventoryCollection.FindOne(ctx,
-		bson.M{"book_name": book.BookInventoryPtr.BookName},
-	).Decode(&bookInventory)
-	if err != nil {
-		return err
-	}
-
+	// Increment book count in inventory
+	bookName := book.BookInventoryPtr.BookName
+	inventoryFilter := bson.M{"book_name": bookName}
+	inventoryUpdate := bson.M{"$inc": bson.M{"count": 1}}
 	_, err = inventoryCollection.UpdateOne(ctx,
-		bson.M{"book_name": book.BookInventoryPtr.BookName},
-		bson.M{"$inc": bson.M{"count": 1}},
+		inventoryFilter,
+		inventoryUpdate,
 	)
 	if err != nil {
 		return err
