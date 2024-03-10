@@ -27,7 +27,7 @@ func NewBookInventoryController(client *mongo.Client) *BookInventoryController {
 		inventoryDatabase:      db,
 		booksCollection:        db.Collection(bookCollectionName),
 		inventoryCollection:    db.Collection(bookInventoryCollectionName),
-		transactionsCollection: db.Collection(transactionsCollection),
+		transactionsCollection: db.Collection(transactionsCollectionName),
 		studentsCollection:     db.Collection(studentCollectionName),
 	}
 }

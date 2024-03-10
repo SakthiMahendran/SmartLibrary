@@ -18,23 +18,6 @@ func NewBookController(db *mongo.Database) *BookController {
 	}
 }
 
-/*
-func (bc *BookController) IsBorrowed(bookID string) (bool, error) {
-
-	filter := bson.M{"book_id": bookID}
-
-	ctx := context.TODO()
-
-	var book models.Book
-	err := bc.collection.FindOne(ctx, filter).Decode(&book)
-	if err != nil {
-		return false, err
-	} else {
-		return !book.BookStatus, nil
-	}
-
-}
-*/
 func (bc *BookController) IsBorrowed(bookID string) (bool, error) {
 	filter := bson.M{"book_id": bookID}
 
