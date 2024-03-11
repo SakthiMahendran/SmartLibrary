@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
+
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -59,12 +60,13 @@
   <!-- Show results button -->
   <button type="button" class="btn btn-success bottom-right" onclick="showResults()">Show Results</button>
 
-  <!-- Search bar -->
+  <!-- Search bar with autocomplete -->
   <div class="input-group mt-3">
-    <input type="text" class="form-control" placeholder="Search by Book Name" id="searchInput">
+    <input type="text" class="form-control" placeholder="Search by Book Name" id="searchInput" oninput="autocomplete()">
     <div class="input-group-append">
       <button class="btn btn-outline-secondary" type="button" onclick="searchBooks()">Search</button>
     </div>
+    <div id="autocompleteList" class="autocomplete-list"></div>
   </div>
 
   <!-- Results table -->
@@ -75,11 +77,24 @@
           <th scope="col">Book Name</th>
           <th scope="col">Author</th>
           <th scope="col">Interested (Count)</th>
-          <th scope="col">Vote</th>
+          <th scope="col">Vote/Unvote</th>
         </tr>
       </thead>
       <tbody id="booksTableBody">
-        <!-- Table rows will be dynamically added here -->
+        <!-- Sample data (replace with your backend integration) -->
+        <tr>
+          <td>Book1</td>
+          <td>Author1</td>
+          <td>5</td>
+          <td><button class="btn btn-primary vote-btn" onclick="toggleVote(0)">Vote</button></td>
+        </tr>
+        <tr>
+          <td>Book2</td>
+          <td>Author2</td>
+          <td>8</td>
+          <td><button class="btn btn-primary vote-btn" onclick="toggleVote(1)">Vote</button></td>
+        </tr>
+        <!-- Add more data as needed -->
       </tbody>
     </table>
   </div>
@@ -178,7 +193,7 @@
       books.forEach((book, index) => {
         const newRow = document.createElement("tr");
         newRow.innerHTML = `<td>${book.bookName}</td><td>${book.author}</td><td>${book.interestedCount}</td>
-                            <td><button class="btn btn-primary vote-btn" onclick="vote(${index})" ${book.hasVoted ? 'disabled' : ''}>Vote</button></td>`;
+                            <td><button class="btn btn-primary vote-btn" onclick="toggleVote(${index})">${book.hasVoted ? 'Unvote' : 'Vote'}</button></td>`;
         tableBody.appendChild(newRow);
       });
 
@@ -187,15 +202,17 @@
     }
 
     // Function to handle voting
-    function vote(index) {
-      // Check if the user has already voted for this book
+    function toggleVote(index) {
+      // Toggle the vote for this book
       if (!booksData[index].hasVoted) {
         booksData[index].interestedCount++;
-        booksData[index].hasVoted = true;
-        displayBooks(booksData); // Refresh the table
       } else {
-        alert("You have already voted for this book.");
+        booksData[index].interestedCount--;
       }
+      booksData[index].hasVoted = !booksData[index].hasVoted;
+
+      // Refresh the table
+      displayBooks(booksData);
     }
 
     // Function to show success popup
@@ -217,7 +234,32 @@
       // Display the sorted books in the table
       displayBooks(booksData);
     }
+
+    // Autocomplete function
+    function autocomplete() {
+      const input = document.getElementById("searchInput");
+      const searchTerm = input.value.toLowerCase();
+      const autocompleteList = document.getElementById("autocompleteList");
+
+      // Filter books that match the input
+      const matchingBooks = booksData.filter(book =>
+        book.bookName.toLowerCase().includes(searchTerm)
+      );
+
+      // Display the autocomplete suggestions
+      autocompleteList.innerHTML = "";
+      matchingBooks.forEach(book => {
+        const suggestion = document.createElement("div");
+        suggestion.innerHTML = `<strong>${book.bookName.substr(0, searchTerm.length)}</strong>${book.bookName.substr(searchTerm.length)}`;
+        suggestion.addEventListener("click", () => {
+          input.value = book.bookName;
+          autocompleteList.innerHTML = "";
+        });
+        autocompleteList.appendChild(suggestion);
+      });
+    }
   </script>
 
 </body>
+
 </html>
