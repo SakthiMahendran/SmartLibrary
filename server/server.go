@@ -10,9 +10,11 @@ import (
 )
 
 type Server struct {
-	app               *fiber.App
-	adminController   *controllers.AdminController
-	studentController *controllers.StudentController
+	app                    *fiber.App
+	adminController        *controllers.AdminController
+	studentController      *controllers.StudentController
+	transactionsController *controllers.TransactionsController
+	bookController         *controllers.BookController
 }
 
 func NewServer() *Server {
@@ -20,9 +22,11 @@ func NewServer() *Server {
 
 	return &Server{
 
-		app:               fiber.New(),
-		adminController:   controllers.NewAdminController(client),
-		studentController: controllers.NewStudentController(client),
+		app:                    fiber.New(),
+		adminController:        controllers.NewAdminController(client),
+		studentController:      controllers.NewStudentController(client),
+		transactionsController: controllers.NewTransactionsController(client),
+		bookController:         controllers.NewBookController(client),
 	}
 }
 
@@ -30,6 +34,8 @@ func (s *Server) Start(port string) error {
 	s.setupAdminRoutes()
 	s.setupStudentRoutes()
 	s.setupPageRoutes()
+	s.setupTransactionsRoutes()
+	s.setupBookRoutes()
 
 	return s.app.Listen(":" + port)
 }
