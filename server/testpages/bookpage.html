@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Borrowed Checker</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f2f2f2;
+            margin: 0;
+            padding: 20px;
+            text-align: center;
+        }
+        h1, h2 {
+            color: #333;
+        }
+        form {
+            margin-bottom: 20px;
+            display: inline-block;
+            text-align: left;
+        }
+        input[type="text"] {
+            width: calc(100% - 20px);
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+            text-align: center;
+        }
+        button[type="submit"] {
+            background-color: #007bff;
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        button[type="submit"]:hover {
+            background-color: #0056b3;
+        }
+        .response {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Book Borrowed Checker</h1>
+
+    <h2>Check if Book is Borrowed</h2>
+    <form id="borrowedForm">
+        Book ID: <input type="text" id="bookId" required><br>
+        <button type="submit">Check</button>
+    </form>
+
+    <div class="response" id="response"></div>
+
+    <script>
+        document.getElementById('borrowedForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            checkIfBookIsBorrowed();
+        });
+
+        function displayResponse(response) {
+            document.getElementById('response').innerHTML = response;
+        }
+
+        function checkIfBookIsBorrowed() {
+            const bookId = document.getElementById('bookId').value;
+
+            fetch(`/api/books/borrowed?bookID=${bookId}`)
+            .then(response => response.json())
+            .then(data => {
+                displayResponse(`Is Book Borrowed: ${data.isBorrowed}`);
+            })
+            .catch(error => {
+                displayResponse('Error: ' + error);
+            });
+        }
+    </script>
+</body>
+</html>
