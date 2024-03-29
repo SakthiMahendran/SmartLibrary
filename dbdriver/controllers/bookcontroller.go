@@ -12,9 +12,9 @@ type BookController struct {
 	collection *mongo.Collection
 }
 
-func NewBookController(db *mongo.Database) *BookController {
+func NewBookController(client *mongo.Client) *BookController {
 	return &BookController{
-		collection: db.Collection("Books"),
+		collection: client.Database(dbName).Collection("Books"),
 	}
 }
 

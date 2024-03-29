@@ -13,6 +13,12 @@ type TransactionsController struct {
 	Client *mongo.Client
 }
 
+func NewTransactionsController(client *mongo.Client) *TransactionsController {
+	return &TransactionsController{
+		Client: client,
+	}
+}
+
 func (tc *TransactionsController) FindStudentTransactions(studentRegNo string) ([]models.Transactions, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
