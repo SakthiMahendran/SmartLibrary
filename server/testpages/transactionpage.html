@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transactions Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f2f2f2;
+            margin: 0;
+            padding: 20px;
+            text-align: center;
+        }
+        h1, h2 {
+            color: #333;
+        }
+        .form-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        form {
+            width: 100%;
+            max-width: 300px;
+            padding: 10px;
+            margin-bottom: 10px;
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        input[type="text"], button[type="submit"] {
+            width: calc(100% - 20px);
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+            text-align: center;
+        }
+        button[type="submit"] {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        button[type="submit"]:hover {
+            background-color: #0056b3;
+        }
+        .response {
+            margin-top: 20px;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+    <h1>Transactions Dashboard</h1>
+
+    <div class="form-container">
+        <form id="studentTransactionsForm">
+            <h2>Find Student Transactions</h2>
+            Registration Number: <input type="text" id="regNo" required><br>
+            <button type="submit">Find Transactions</button>
+            <input type="hidden" id="operation" value="findStudentTransactions">
+        </form>
+
+        <form id="bookTransactionsForm">
+            <h2>Find Book Transactions</h2>
+            Book ID: <input type="text" id="bookId" required><br>
+            <button type="submit">Find Transactions</button>
+            <input type="hidden" id="operation" value="findBookTransactions">
+        </form>
+
+        <form id="dueTransactionsForm">
+            <h2>Find Due Transactions</h2>
+            <button type="submit">Find Due Transactions</button>
+            <input type="hidden" id="operation" value="findDueTransactions">
+        </form>
+    </div>
+
+    <div class="response" id="response"></div>
+
+    <script>
+        document.getElementById('studentTransactionsForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            findStudentTransactions();
+        });
+
+        document.getElementById('bookTransactionsForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            findBookTransactions();
+        });
+
+        document.getElementById('dueTransactionsForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            findDueTransactions();
+        });
+
+        function displayResponse(response) {
+            document.getElementById('response').innerHTML = response;
+        }
+
+        function findStudentTransactions() {
+            const regNo = document.getElementById('regNo').value;
+            const operation = document.getElementById('operation').value;
+
+            fetch(`/api/transactions/student?regNo=${regNo}&operation=${operation}`)
+            .then(response => response.json())
+            .then(data => {
+                displayResponse(JSON.stringify(data));
+            })
+            .catch(error => {
+                displayResponse('Error: ' + error);
+            });
+        }
+
+        function findBookTransactions() {
+            const bookId = document.getElementById('bookId').value;
+            const operation = document.getElementById('operation').value;
+
+            fetch(`/api/transactions/book?bookID=${bookId}&operation=${operation}`)
+            .then(response => response.json())
+            .then(data => {
+                displayResponse(JSON.stringify(data));
+            })
+            .catch(error => {
+                displayResponse('Error: ' + error);
+            });
+        }
+
+        function findDueTransactions() {
+            const operation = document.getElementById('operation').value;
+
+            fetch(`/api/transactions/due?operation=${operation}`)
+            .then(response => response.json())
+            .then(data => {
+                displayResponse(JSON.stringify(data));
+            })
+            .catch(error => {
+                displayResponse('Error: ' + error);
+            });
+        }
+    </script>
+</body>
+</html>

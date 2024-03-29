@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin & Student Pages</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f2f2f2;
+            margin: 0;
+            padding: 20px;
+            text-align: center;
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <h1>Welcome to Admin & Student Pages</h1>
+
+    <button onclick="goToAdminPage()">Admin Page</button>
+    <button onclick="goToStudentPage()">Student Page</button>
+
+    <script>
+        function goToAdminPage() {
+            window.location.href = '/adminpage';
+        }
+
+        function goToStudentPage() {
+            window.location.href = '/studentpage';
+        }
+    </script>
+</body>
+</html>
