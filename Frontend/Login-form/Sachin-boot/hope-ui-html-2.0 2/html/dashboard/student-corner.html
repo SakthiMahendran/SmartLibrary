@@ -1,4 +1,6 @@
-<!DOCTYPE html>
+<!--
+  
+  <!DOCTYPE html>
 <html lang="en" dir="ltr">
 
 <head>
@@ -6,11 +8,18 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <title>Student Corner</title>
 
-  <!-- Bootstrap CSS -->
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  Bootstrap CSS -->
+
+  <!--
+    
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"> 
+  
+  -->
 
   <!-- Add your custom styles here -->
-  <style>
+  <!--
+    
+    <style>
     body {
       padding: 20px;
       position: relative;
@@ -54,13 +63,13 @@
 
 <body>
 
-  <!-- Add new book button -->
+   Add new book button 
   <button type="button" class="btn btn-primary bottom-left" onclick="showAddBookPopup()">Add New Book</button>
 
-  <!-- Show results button -->
+  <!-- Show results button 
   <button type="button" class="btn btn-success bottom-right" onclick="showResults()">Show Results</button>
 
-  <!-- Search bar with autocomplete -->
+  <!-- Search bar with autocomplete 
   <div class="input-group mt-3">
     <input type="text" class="form-control" placeholder="Search by Book Name" id="searchInput" oninput="autocomplete()">
     <div class="input-group-append">
@@ -69,7 +78,7 @@
     <div id="autocompleteList" class="autocomplete-list"></div>
   </div>
 
-  <!-- Results table -->
+  <!-- Results table 
   <div class="table-container mt-3">
     <table class="table">
       <thead>
@@ -81,7 +90,7 @@
         </tr>
       </thead>
       <tbody id="booksTableBody">
-        <!-- Sample data (replace with your backend integration) -->
+        <!-- Sample data (replace with your backend integration)
         <tr>
           <td>Book1</td>
           <td>Author1</td>
@@ -94,12 +103,12 @@
           <td>8</td>
           <td><button class="btn btn-primary vote-btn" onclick="toggleVote(1)">Vote</button></td>
         </tr>
-        <!-- Add more data as needed -->
+        <!-- Add more data as needed 
       </tbody>
     </table>
   </div>
 
-  <!-- Add new book form popup -->
+  <!-- Add new book form popup 
   <div id="addBookPopup" class="popup-container">
     <form>
       <div class="form-group">
@@ -114,12 +123,12 @@
     </form>
   </div>
 
-  <!-- Match not found popup -->
+ Match not found popup 
   <div id="matchNotFoundPopup" class="popup-container">
     <p>No match found.</p>
   </div>
 
-  <!-- JavaScript -->
+ JavaScript 
   <script>
     // Sample data (replace with your backend integration)
     let booksData = [
@@ -262,4 +271,171 @@
 
 </body>
 
+</html>-->
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Corner</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <!-- Custom CSS -->
+    <style>
+        .header {
+            background-image: url("../../assets/images/error/03.png"); /* Background image */
+            background-size: cover;
+            height: 300px; /* Adjust height as needed */
+            text-align: center;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .title {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+        }
+
+        .subtitle {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+        }
+
+        .container {
+            padding: 20px;
+        }
+
+        .btn-container {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .btn {
+            margin: 0 10px;
+        }
+
+        .table-container {
+            max-height: 300px;
+            overflow-y: auto;
+            margin-top: 20px;
+        }
+
+        .table {
+            width: 100%;
+            background-color: white;
+        }
+
+        .table th,
+        .table td {
+            padding: 10px;
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Header -->
+    <div class="header">
+        <h1 class="title">Student Corner</h1>
+        <p class="subtitle">Explore and vote for your favorite books</p>
+    </div>
+
+    <!-- Container -->
+    <div class="container">
+        <!-- Add new book button -->
+        <div class="btn-container">
+            <button type="button" class="btn btn-primary" onclick="showAddBookPopup()">Add New Book</button>
+            <button type="button" class="btn btn-success" onclick="showResults()">Show Results</button>
+        </div>
+
+        <!-- Search bar with autocomplete -->
+        <div class="input-group mt-3">
+            <input type="text" class="form-control" placeholder="Search by Book Name" id="searchInput" oninput="autocomplete()">
+            <div class="input-group-append">
+                <button class="btn btn-outline-secondary" type="button" onclick="searchBooks()">Search</button>
+            </div>
+            <div id="autocompleteList" class="autocomplete-list"></div>
+        </div>
+
+        <!-- Results table -->
+        <div class="table-container mt-3">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th scope="col">Book Name</th>
+                        <th scope="col">Author</th>
+                        <th scope="col">Interested (Count)</th>
+                        <th scope="col">Vote/Unvote</th>
+                    </tr>
+                </thead>
+                <tbody id="booksTableBody">
+                    <!-- Sample data (replace with your backend integration) -->
+                    <tr>
+                        <td>Book1</td>
+                        <td>Author1</td>
+                        <td>5</td>
+                        <td><button class="btn btn-primary vote-btn" onclick="toggleVote(0)">Vote</button></td>
+                    </tr>
+                    <tr>
+                        <td>Book2</td>
+                        <td>Author2</td>
+                        <td>8</td>
+                        <td><button class="btn btn-primary vote-btn" onclick="toggleVote(1)">Vote</button></td>
+                    </tr>
+                    <!-- Add more data as needed -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script>
+        // Sample data (replace with your backend integration)
+        let booksData = [
+            { bookName: 'Book1', author: 'Author1', interestedCount: 5, hasVoted: false },
+            { bookName: 'Book2', author: 'Author2', interestedCount: 8, hasVoted: false },
+            // Add more data as needed
+        ];
+
+        // Function to show the Add Book form popup
+        function showAddBookPopup() {
+            alert("Add new book functionality goes here.");
+            // Implement as needed
+        }
+
+        // Function to search for books
+        function searchBooks() {
+            alert("Search functionality goes here.");
+            // Implement as needed
+        }
+
+        // Function to handle voting
+        function toggleVote(index) {
+            alert("Voting functionality goes here.");
+            // Implement as needed
+        }
+
+        // Autocomplete function
+        function autocomplete() {
+            alert("Autocomplete functionality goes here.");
+            // Implement as needed
+        }
+
+        // Function to show results
+        function showResults() {
+            alert("Show results functionality goes here.");
+            // Implement as needed
+        }
+    </script>
+
+</body>
+
 </html>
+
+
