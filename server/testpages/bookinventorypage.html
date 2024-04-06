@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Library</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f2f2f2;
+            margin: 0;
+            padding: 20px;
+            text-align: center;
+        }
+        h1, h2 {
+            color: #333;
+        }
+        form {
+            margin-bottom: 20px;
+            display: inline-block;
+            text-align: left;
+        }
+        input[type="text"],
+        input[type="date"] {
+            width: calc(100% - 20px);
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+            text-align: center;
+        }
+        button[type="submit"] {
+            background-color: #007bff;
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        button[type="submit"]:hover {
+            background-color: #0056b3;
+        }
+        .response {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Smart Library</h1>
+
+    <h2>Add Book</h2>
+    <form id="addBookForm">
+        Book ID: <input type="text" id="bookId" required><br>
+        Book Name: <input type="text" id="bookName" required><br>
+        Author: <input type="text" id="author" required><br>
+        Department: <input type="text" id="dept" required><br>
+        <button type="submit">Add Book</button>
+    </form>
+
+    <h2>Update Book</h2>
+    <form id="updateBookForm">
+        Present Book Data:<br>
+        Book ID: <input type="text" id="presentBookId" required><br>
+        New Book Data:<br>
+        Book Name: <input type="text" id="newBookName" required><br>
+        Author: <input type="text" id="newAuthor" required><br>
+        Department: <input type="text" id="newDept" required><br>
+        <button type="submit">Update Book</button>
+    </form>
+
+    <h2>Delete Book</h2>
+    <form id="deleteBookForm">
+        Book ID: <input type="text" id="deleteBookId" required><br>
+        <button type="submit">Delete Book</button>
+    </form>
+
+    <h2>Check Availability</h2>
+    <form id="checkAvailabilityForm">
+        Book Name: <input type="text" id="checkBookName" required><br>
+        <button type="submit">Check Availability</button>
+    </form>
+
+    <h2>Borrow Book</h2>
+    <form id="borrowBookForm">
+        Book ID: <input type="text" id="borrowBookId" required><br>
+        Student Reg No: <input type="text" id="borrowStudentRegNo" required><br>
+        <button type="submit">Borrow Book</button>
+    </form>
+
+    <h2>Return Book</h2>
+    <form id="returnBookForm">
+        Book ID: <input type="text" id="returnBookId" required><br>
+        Student Reg No: <input type="text" id="returnStudentRegNo" required><br>
+        <button type="submit">Return Book</button>
+    </form>
+
+    <div class="response" id="response"></div>
+
+    <script>
+        document.getElementById('addBookForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            addBook();
+        });
+
+        document.getElementById('updateBookForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            updateBook();
+        });
+
+        document.getElementById('deleteBookForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            deleteBook();
+        });
+
+        document.getElementById('checkAvailabilityForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            checkAvailability();
+        });
+
+        document.getElementById('borrowBookForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            borrowBook();
+        });
+
+        document.getElementById('returnBookForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            returnBook();
+        });
+
+        function displayResponse(response) {
+            document.getElementById('response').innerHTML = response;
+        }
+
+        function addBook() {
+            const bookId = document.getElementById('bookId').value;
+            const bookName = document.getElementById('bookName').value;
+            const author = document.getElementById('author').value;
+            const dept = document.getElementById('dept').value;
+
+            const data = {
+                book_id: bookId,
+                book_inventory_ptr: {
+                    book_name: bookName,
+                    author: author,
+                    book_dept: dept
+                }
+            };
+
+            fetch('/api/bookinventory/addbook', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(data => {
+                displayResponse(data.message);
+            })
+            .catch(error => {
+                displayResponse('Error: ' + error);
+            });
+        }
+
+        function updateBook() {
+            const presentBookId = document.getElementById('presentBookId').value;
+            const newBookName = document.getElementById('newBookName').value;
+            const newAuthor = document.getElementById('newAuthor').value;
+            const newDept = document.getElementById('newDept').value;
+
+            const presentData = {
+                book_id: presentBookId
+            };
+
+            const toBeUpdatedData = {
+                book_name: newBookName,
+                author: newAuthor,
+                book_dept: newDept
+            };
+
+            fetch('/api/bookinventory/updatebook', {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(presentData, toBeUpdatedData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                displayResponse(data.message);
+            })
+            .catch(error => {
+                displayResponse('Error: ' + error);
+            });
+        }
+
+        function deleteBook() {
+            const deleteBookId = document.getElementById('deleteBookId').value;
+
+            fetch(`/api/bookinventory/deletebook?bookId=${deleteBookId}`, {
+                method: 'DELETE'
+            })
+            .then(response => response.json())
+            .then(data => {
+                displayResponse(data.message);
+            })
+            .catch(error => {
+                displayResponse('Error: ' + error);
+            });
+        }
+
+        function checkAvailability() {
+            const checkBookName = document.getElementById('checkBookName').value;
+
+            fetch(`/api/bookinventory/checkavailability?bookName=${checkBookName}`)
+            .then(response => response.json())
+            .then(data => {
+                displayResponse(`Book Availability: ${data.isAvailable}`);
+            })
+            .catch(error => {
+                displayResponse('Error: ' + error);
+            });
+        }
+
+        function borrowBook() {
+            const borrowBookId = document.getElementById('borrowBookId').value;
+            const borrowStudentRegNo = document.getElementById('borrowStudentRegNo').value;
+
+            const data = {
+                book_id: borrowBookId,
+                student_reg_no: borrowStudentRegNo
+            };
+
+            fetch('/api/bookinventory/borrowbook', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(data => {
+                displayResponse(data.message);
+            })
+            .catch(error => {
+                displayResponse('Error: ' + error);
+            });
+        }
+
+        function returnBook() {
+            const returnBookId = document.getElementById('returnBookId').value;
+            const returnStudentRegNo = document.getElementById('returnStudentRegNo').value;
+
+            const data = {
+                book_id: returnBookId,
+                student_reg_no: returnStudentRegNo
+            };
+
+            fetch('/api/bookinventory/returnbook', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(data => {
+                displayResponse(data.message);
+            })
+            .catch(error => {
+                displayResponse('Error: ' + error);
+            });
+        }
+    </script>
+</body>
+</html>

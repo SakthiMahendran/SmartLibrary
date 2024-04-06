@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Operations Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f2f2f2;
+            margin: 0;
+            padding: 0;
+            text-align: center;
+        }
+        h1, h2 {
+            color: #333;
+        }
+        form {
+            margin-bottom: 20px;
+            display: inline-block;
+            text-align: left;
+        }
+        input[type="text"],
+        input[type="password"],
+        input[type="date"] {
+            width: calc(100% - 20px);
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+            text-align: center;
+        }
+        button[type="submit"] {
+            background-color: #007bff;
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        button[type="submit"]:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <h1>Student Operations Test</h1>
+
+    <h2>Authenticate Student</h2>
+    <form id="authForm">
+        Registration Number: <input type="text" id="regNoAuth" required><br>
+        Date of Birth: <input type="date" id="dobAuth" required><br>
+        <button type="submit">Authenticate</button>
+        <input type="hidden" id="operationAuth" value="auth">
+    </form>
+
+    <hr>
+
+    <h2>Create Student</h2>
+    <form id="createForm">
+        Registration Number: <input type="text" id="regNoCreate" required><br>
+        Date of Birth: <input type="date" id="dobCreate" required><br>
+        <!-- Add other fields as required for student creation -->
+        <button type="submit">Create Student</button>
+        <input type="hidden" id="operationCreate" value="create">
+    </form>
+
+    <hr>
+
+    <h2>Delete Student</h2>
+    <form id="deleteForm">
+        Registration Number: <input type="text" id="regNoDelete" required><br>
+        <button type="submit">Delete Student</button>
+        <input type="hidden" id="operationDelete" value="delete">
+    </form>
+
+    <hr>
+
+    <h2>Update Student</h2>
+    <form id="updateForm">
+        Registration Number: <input type="text" id="regNoUpdate" required><br>
+        <!-- Add other fields as required for student update -->
+        <button type="submit">Update Student</button>
+        <input type="hidden" id="operationUpdate" value="update">
+    </form>
+
+    <script>
+        document.getElementById('authForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            authenticateStudent();
+        });
+
+        document.getElementById('createForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            createStudent();
+        });
+
+        document.getElementById('deleteForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            deleteStudent();
+        });
+
+        document.getElementById('updateForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            updateStudent();
+        });
+
+        function authenticateStudent() {
+            var regNo = document.getElementById("regNoAuth").value;
+            var dob = document.getElementById("dobAuth").value;
+            var operation = document.getElementById("operationAuth").value;
+
+            sendRequest(operation, regNo, dob);
+        }
+
+        function createStudent() {
+            var regNo = document.getElementById("regNoCreate").value;
+            var dob = document.getElementById("dobCreate").value;
+            var operation = document.getElementById("operationCreate").value;
+
+            sendRequest(operation, regNo, dob);
+        }
+
+        function deleteStudent() {
+            var regNo = document.getElementById("regNoDelete").value;
+            var operation = document.getElementById("operationDelete").value;
+
+            sendRequest(operation, regNo);
+        }
+
+        function updateStudent() {
+            var regNo = document.getElementById("regNoUpdate").value;
+            var operation = document.getElementById("operationUpdate").value;
+
+            sendRequest(operation, regNo);
+        }
+
+        function sendRequest(operation, regNo, dob) {
+            var data = {
+                operation: operation,
+                regNo: regNo
+            };
+
+            if (dob) {
+                data.dob = dob;
+            }
+
+            fetch('/api/student', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Display JSON response as a popup
+                alert(JSON.stringify(data));
+            })
+            .catch(error => {
+                // Display error message as a popup
+                alert('Error: ' + error);
+            });
+        }
+    </script>
+</body>
+</html>

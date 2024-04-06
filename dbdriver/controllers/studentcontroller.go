@@ -10,14 +10,14 @@ import (
 )
 
 type StudentController struct {
-	db                    *mongo.Database
-	studentCollectionName string
+	db             *mongo.Database
+	collectionName string
 }
 
-func NewStudentController(client *mongo.Client, dbName, studentCollectionName string) *StudentController {
+func NewStudentController(client *mongo.Client) *StudentController {
 	return &StudentController{
-		db:                    client.Database(dbName),
-		studentCollectionName: studentCollectionName,
+		db:             client.Database(dbName),
+		collectionName: studentCollectionName,
 	}
 }
 
@@ -27,9 +27,8 @@ func (sc *StudentController) Authstu(RegNo string, dob time.Time) bool {
 		"dob":    dob,
 	}
 	var student models.Student
-	err := sc.db.Collection(sc.studentCollectionName).FindOne(context.Background(), filter).Decode(&student)
+	err := sc.db.Collection(sc.collectionName).FindOne(context.Background(), filter).Decode(&student)
 	if err == nil {
-
 		return true
 	} else {
 		return false
@@ -37,7 +36,7 @@ func (sc *StudentController) Authstu(RegNo string, dob time.Time) bool {
 }
 
 func (sc *StudentController) CreateStudent(student *models.Student) error {
-	_, err := sc.db.Collection(sc.studentCollectionName).InsertOne(context.Background(), student)
+	_, err := sc.db.Collection(sc.collectionName).InsertOne(context.Background(), student)
 	if err != nil {
 		return err
 	}
@@ -46,17 +45,17 @@ func (sc *StudentController) CreateStudent(student *models.Student) error {
 
 func (sc *StudentController) DeleteStudent(student *models.Student) error {
 	filter := bson.M{"reg_no": student.RegNo}
-	_, err := sc.db.Collection(sc.studentCollectionName).DeleteOne(context.Background(), filter)
+	_, err := sc.db.Collection(sc.collectionName).DeleteOne(context.Background(), filter)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func (sc *StudentController) UpdateStudent(student *models.Student, updateData bson.M) error {
-	filter := bson.M{"reg_no": student.RegNo}
+func (sc *StudentController) UpdateStudent(regNo string, updateData *models.Student) error {
+	filter := bson.M{"reg_no": regNo}
 	update := bson.M{"$set": updateData}
-	_, err := sc.db.Collection(sc.studentCollectionName).UpdateOne(context.Background(), filter, update)
+	_, err := sc.db.Collection(sc.collectionName).UpdateOne(context.Background(), filter, update)
 	if err != nil {
 		return err
 	}
@@ -65,7 +64,7 @@ func (sc *StudentController) UpdateStudent(student *models.Student, updateData b
 
 func (sc *StudentController) FindStudents(filter bson.M) ([]*models.Student, error) {
 	var students []*models.Student
-	cur, err := sc.db.Collection(sc.studentCollectionName).Find(context.Background(), filter)
+	cur, err := sc.db.Collection(sc.collectionName).Find(context.Background(), filter)
 	if err != nil {
 		return nil, err
 	}

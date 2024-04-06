@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Panel</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f2f2f2;
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      width: 50%; /* Adjust as needed */
+      margin: 0 auto; /* Center container */
+      text-align: center; /* Center text within container */
+    }
+    h1, h2 {
+      color: #333;
+    }
+    form {
+      margin-bottom: 20px;
+    }
+    input[type="text"],
+    input[type="password"] {
+      width: calc(50% - 20px); /* Adjusted width */
+      padding: 10px;
+      margin-bottom: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      box-sizing: border-box;
+      text-align: center; /* Center text */
+    }
+    button[type="submit"] {
+      background-color: #007bff;
+      color: #fff;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    button[type="submit"]:hover {
+      background-color: #0056b3;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Admin Panel</h1>
+    
+    <!-- Form for creating a new admin -->
+    <h2>Create Admin</h2>
+    <form id="createAdminForm">
+      <input type="text" id="oldUserName" placeholder="Old Username"><br>
+      <input type="password" id="oldPassWord" placeholder="Old Password"><br>
+      <input type="text" id="newUserName" placeholder="New Username"><br>
+      <input type="password" id="newPassWord" placeholder="New Password"><br>
+      <button type="submit">Create Admin</button>
+    </form>
+    
+    <!-- Form for authenticating an admin -->
+    <h2>Authenticate Admin</h2>
+    <form id="authForm">
+      <input type="text" id="userName" placeholder="Username"><br>
+      <input type="password" id="passWord" placeholder="Password"><br>
+      <button type="submit">Authenticate</button>
+    </form>
+    
+    <!-- Form for deleting an admin -->
+    <h2>Delete Admin</h2>
+    <form id="deleteAdminForm">
+      <input type="text" id="authAdminUserName" placeholder="Auth Admin Username"><br>
+      <input type="password" id="authAdminPassWord" placeholder="Auth Admin Password"><br>
+      <input type="text" id="targetAdminUserName" placeholder="Target Admin Username"><br>
+      <input type="password" id="targetAdminPassWord" placeholder="Target Admin Password"><br>
+      <button type="submit">Delete Admin</button>
+    </form>
+  </div>
+
+  <script>
+    // Function to make requests to the backend with data in the request body
+    async function sendData(url = '', method = 'POST', data = {}) {
+      const response = await fetch(url, {
+        method: method,
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data) // Convert data to JSON string
+      });
+      return await response.json();
+    }
+    
+    // Function to display result in a popup
+    function displayResult(result) {
+      alert(result.message || result.error || 'Unknown error occurred');
+    }
+    
+    // Create Admin Form Submit Event
+    document.getElementById('createAdminForm').addEventListener('submit', async function(event) {
+      event.preventDefault();
+      const oldUserName = document.getElementById('oldUserName').value;
+      const oldPassWord = document.getElementById('oldPassWord').value;
+      const newUserName = document.getElementById('newUserName').value;
+      const newPassWord = document.getElementById('newPassWord').value;
+      
+      const result = await sendData('/api/admin/', 'PUT', {
+        operation: 'createadmin',
+        oldUserName,
+        oldPassWord,
+        newUserName,
+        newPassWord
+      });
+      displayResult(result);
+    });
+    
+    // Authenticate Admin Form Submit Event
+    document.getElementById('authForm').addEventListener('submit', async function(event) {
+      event.preventDefault();
+      const userName = document.getElementById('userName').value;
+      const passWord = document.getElementById('passWord').value;
+      
+      const result = await sendData('/api/admin/', 'POST', {
+        operation: 'auth',
+        userName,
+        passWord
+      });
+      displayResult(result);
+    });
+
+    // Delete Admin Form Submit Event
+    document.getElementById('deleteAdminForm').addEventListener('submit', async function(event) {
+      event.preventDefault();
+      const authAdminUserName = document.getElementById('authAdminUserName').value;
+      const authAdminPassWord = document.getElementById('authAdminPassWord').value;
+      const targetAdminUserName = document.getElementById('targetAdminUserName').value;
+      const targetAdminPassWord = document.getElementById('targetAdminPassWord').value;
+
+      const result = await sendData('/api/admin/', 'DELETE', {
+        operation: 'deleteadmin',
+        authAdminUserName,
+        authAdminPassWord,
+        targetAdminUserName,
+        targetAdminPassWord
+      });
+      displayResult(result);
+    });
+  </script>
+</body>
+</html>
