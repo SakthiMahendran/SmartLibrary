@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <title>Admin login</title>
+
+  <!-- Library / Plugin Css Build -->
+  <link rel="stylesheet" href="../../assets/css/core/libs.min.css" />
+
+  <!-- Hope Ui Design System Css -->
+  <link rel="stylesheet" href="../../assets/css/hope-ui.min.css?v=2.0.0" />
+
+  <!-- Custom Css -->
+  <link rel="stylesheet" href="../../assets/css/custom.min.css?v=2.0.0" />
+
+  <!-- Dark Css -->
+  <link rel="stylesheet" href="../../assets/css/dark.min.css" />
+
+  <!-- Customizer Css -->
+  <link rel="stylesheet" href="../../assets/css/customizer.min.css" />
+
+  <!-- RTL Css -->
+  <link rel="stylesheet" href="../../assets/css/rtl.min.css" />
+
+  <!-- Add this CSS style for the popups -->
+  <style>
+   body {
+     margin: 0;
+     display: flex;
+     justify-content: center;
+     align-items: center;
+     height: 100vh;
+     background: #f0f0f0;
+   }
+
+   .popup-container {
+     display: none;
+     position: fixed;
+     top: 50%;
+     left: 50%;
+     transform: translate(-50%, -50%);
+     background: rgba(0, 0, 0, 0.5);
+     border-radius: 10px; /* Adjust as needed */
+     padding: 15px; /* Adjust as needed */
+     text-align: center;
+   }
+
+   .popup {
+     background: #fff;
+     border-radius: 10px; /* Adjust as needed */
+     padding: 100px; /* Adjust as needed */
+     text-align: center;
+   }
+</style>
+
+
+</head>
+
+<body class=" " data-bs-spy="scroll" data-bs-target="#elements-section" data-bs-offset="0" tabindex="0">
+  <!-- loader Start -->
+  <div id="loading">
+    <div class="loader simple-loader">
+      <div class="loader-body"></div>
+    </div>
+  </div>
+  <!-- loader END -->
+
+  <div class="wrapper">
+    <section class="login-content">
+      <div class="row m-0 align-items-center bg-white vh-100">
+        <div class="col-md-6">
+          <div class="row justify-content-center">
+            <div class="col-md-10">
+              <div class="card card-transparent shadow-none d-flex justify-content-center mb-0 auth-card">
+                <div class="card-body">
+                  <a href="../../dashboard/index.html" class="navbar-brand d-flex align-items-center mb-3">
+                    <h4 class="logo-title ms-3">Jeppiaar Central Smart Library</h4>
+                  </a>
+                  <h2 class="mb-2 text-center">Admin Login</h2>
+                  <form>
+                    <div class="row">
+                      <div class="col-lg-12">
+                        <div class="form-group">
+                          <label for="email" class="form-label">Username</label>
+                          <input type="email" class="form-control" id="email" aria-describedby="email" placeholder="Enter Email ">
+                        </div>
+                      </div>
+                      <div class="col-lg-12">
+                        <div class="form-group">
+                          <label for="password" class="form-label">Password</label>
+                          <input type="password" class="form-control" id="password" aria-describedby="password" placeholder="Enter Password ">
+                        </div>
+                      </div>
+
+                      <div class="col-lg-12 d-flex justify-content-between">
+                        <a href="javascript:void(0);" onclick="showRecoverPasswordPopup()">Forgot Password?</a>
+                      </div>
+                    </div>
+                    <div class="d-flex justify-content-center">
+                      <button type="submit" class="btn btn-primary">Login</button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="sign-bg">
+            <svg width="280" height="230" viewBox="0 0 431 398" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <g opacity="0.05">
+                <rect x="-157.085" y="193.773" width="543" height="77.5714" rx="38.7857" transform="rotate(-45 -157.085 193.773)"
+                  fill="#3B8AFF" />
+                <rect x="7.46875" y="358.327" width="543" height="77.5714" rx="38.7857" transform="rotate(-45 7.46875 358.327)"
+                  fill="#3B8AFF" />
+                <rect x="61.9355" y="138.545" width="310.286" height="77.5714" rx="38.7857" transform="rotate(45 61.9355 138.545)"
+                  fill="#3B8AFF" />
+                <rect x="62.3154" y="-190.173" width="543" height="77.5714" rx="38.7857" transform="rotate(45 62.3154 -190.173)"
+                  fill="#3B8AFF" />
+              </g>
+            </svg>
+          </div>
+        </div>
+        <div class="col-md-6 d-md-block d-none bg-primary p-0 mt-n1 vh-100 overflow-hidden">
+          <img src="../../assets/images/auth/jp.jpeg" class="img-fluid gradient-main animated-scaleX" height=100% width=100%
+            alt="images">
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- Recover Password Popup -->
+  <div id="recoverPasswordPopup" class="popup-container">
+    <div class="popup">
+      <!-- Content for the Recover Password Popup -->
+      <h2>Recover Password</h2>
+      <p>Enter your email address and we'll send you an OTP to reset your password.</p>
+      <form>
+        <div class="row">
+          <div class="col-lg-12">
+            <div class="floating-label form-group">
+              <label for="email" class="form-label">Email</label>
+              <input type="email" class="form-control" id="email" aria-describedby="email" placeholder="Enter Mail id">
+            </div>
+          </div>
+        </div>
+        <div class="button-container">
+          <a href="javascript:void(0);" onclick="showVerifyOTPPopup()" class="btn btn-primary w-100" id="otpbutton">
+            <div>Next</div>
+          </a>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Verify OTP Popup -->
+  <div id="verifyOTPPopup" class="popup-container">
+    <div class="popup">
+      <!-- Content for the Verify OTP Popup -->
+      <h2>Verify OTP</h2>
+      <p>Enter the OTP sent to your email address to reset your password.</p>
+      <form>
+        <div class="row">
+          <div class="col-lg-12">
+            <div class="floating-label form-group">
+              <label for="otp" class="form-label">OTP</label>
+              <input type="text" class="form-control" id="otp" aria-describedby="otp" placeholder="Enter OTP">
+            </div>
+          </div>
+        </div>
+        <!-- Display error message for invalid OTP -->
+        <div id="invalidOTPTxt" style="color: red; margin-bottom: 10px;"></div>
+        <button type="button" class="btn btn-primary" onclick="verifyOTP()">Verify OTP</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Reset Password Popup -->
+  <div id="resetPasswordPopup" class="popup-container">
+    <div class="popup">
+      <!-- Content for the Reset Password Popup -->
+      <h2>Reset Password</h2>
+      <p>Enter your new password and confirm to reset your password.</p>
+      <form>
+        <div class="row">
+          <div class="col-lg-12">
+            <div class="floating-label form-group">
+              <label for="newPassword" class="form-label">New Password</label>
+              <input type="password" class="form-control" id="newPassword" aria-describedby="newPassword" placeholder="Enter new pwd ">
+            </div>
+          </div>
+          <div class="col-lg-12">
+            <div class="floating-label form-group">
+              <label for="confirmPassword" class="form-label">Confirm Password</label>
+              <input type="password" class="form-control" id="confirmPassword" aria-describedby="confirmPassword" placeholder="Re-enter new pwd">
+            </div>
+          </div>
+        </div>
+        <div id="invalidpwd" style="color: red; margin-bottom: 10px;"></div>
+        <button type="button" class="btn btn-primary" onclick="resetPassword()">Reset Password</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Password Reset Success Popup -->
+  <div id="resetPasswordSuccessPopup" class="popup-container">
+    <div class="popup">
+      <!-- Content for the Password Reset Success Popup -->
+      <h2>Password Reset Successful</h2>
+      <p>Your password has been successfully reset.</p>
+    </div>
+    
+  </div>
+
+  <!-- Library Bundle Script -->
+  <script src="../../assets/js/core/libs.min.js"></script>
+
+  <!-- External Library Bundle Script -->
+  <script src="../../assets/js/core/external.min.js"></script>
+
+  <!-- Widgetchart Script -->
+  <script src="../../assets/js/charts/widgetcharts.js"></script>
+
+  <!-- mapchart Script -->
+  <script src="../../assets/js/charts/vectore-chart.js"></script>
+  <script src="../../assets/js/charts/dashboard.js"></script>
+
+  <!-- fslightbox Script -->
+  <script src="../../assets/js/plugins/fslightbox.js"></script>
+
+  <!-- Settings Script -->
+  <script src="../../assets/js/plugins/setting.js"></script>
+
+  <!-- Slider-tab Script -->
+  <script src="../../assets/js/plugins/slider-tabs.js"></script>
+
+  <!-- Form Wizard Script -->
+  <script src="../../assets/js/plugins/form-wizard.js"></script>
+
+  <!-- AOS Animation Plugin-->
+
+  <!-- App Script -->
+  <script src="../../assets/js/hope-ui.js" defer></script>
+
+  <!-- Add this JavaScript code for the popups -->
+  <script>
+    function showRecoverPasswordPopup() {
+      document.getElementById("recoverPasswordPopup").style.display = "block";
+    }
+
+    function showVerifyOTPPopup() {
+      document.getElementById("recoverPasswordPopup").style.display = "none";
+      document.getElementById("verifyOTPPopup").style.display = "block";
+    }
+
+    function verifyOTP() {
+      // Implement OTP verification logic here
+      var enteredOTP = document.getElementById("otp").value;
+
+      // Mocking a backend API call for OTP verification (replace this with your actual
+            var correctOTP = "123456";
+
+      if (enteredOTP === correctOTP) {
+        // OTP is correct
+        // Close the Verify OTP Popup
+        document.getElementById("verifyOTPPopup").style.display = "none";
+
+        // Show the Reset Password Popup
+        document.getElementById("resetPasswordPopup").style.display = "block";
+      } else {
+        // OTP is incorrect
+        // Show error message
+        document.getElementById("invalidOTPTxt").innerText = "Invalid OTP. Please try again.";
+      }
+    }
+
+    function resetPassword() {
+      var newPassword = document.getElementById("newPassword").value;
+      var confirmPassword = document.getElementById("confirmPassword").value;
+
+      if (newPassword === confirmPassword) {
+        // Passwords match
+        // Implement password update logic here
+
+        // Close the Reset Password Popup
+        document.getElementById("resetPasswordPopup").style.display = "none";
+
+        // Show the Password Reset Success Popup
+        showPasswordResetSuccessPopup();
+      } else {
+        // Passwords do not match
+        document.getElementById("invalidpwd").innerText = "Password doesn't match. Please try again.";
+      }
+    }
+
+    function showPasswordResetSuccessPopup() {
+      // Close the Reset Password Popup
+      document.getElementById("resetPasswordPopup").style.display = "none";
+
+      // Show the Password Reset Success Popup
+      document.getElementById("resetPasswordSuccessPopup").style.display = "block";
+    }
+  </script>
+
+</body>
+
+</html>
+
