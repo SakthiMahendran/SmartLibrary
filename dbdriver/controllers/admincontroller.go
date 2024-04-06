@@ -11,16 +11,17 @@ import (
 )
 
 type AdminController struct {
-	db                  *mongo.Database
-	adminCollectionName string
+	db             *mongo.Database
+	collectionName string
 }
 
-func NewAdminController(client *mongo.Client, dbName, adminCollectionName string) *AdminController {
+func NewAdminController(client *mongo.Client) *AdminController {
 	return &AdminController{
-		db:                  client.Database(dbName),
-		adminCollectionName: adminCollectionName,
+		db:             client.Database(dbName),
+		collectionName: adminCollectionName,
 	}
 }
+
 func (ac *AdminController) DeleteAdmin(authAdminUsername, authAdminPassword, targetUserName, targetPassword string) error {
 	if !ac.Auth(authAdminUsername, authAdminPassword) {
 		return errors.New("authentication failed")
@@ -29,32 +30,20 @@ func (ac *AdminController) DeleteAdmin(authAdminUsername, authAdminPassword, tar
 		return errors.New("authentication failed for target admin")
 	}
 	var targetAdmin models.Admin
-	err := ac.db.Collection(ac.adminCollectionName).FindOne(context.TODO(), bson.M{
+	err := ac.db.Collection(ac.collectionName).FindOne(context.TODO(), bson.M{
 		"username": targetUserName,
 		"password": targetPassword,
 	}).Decode(&targetAdmin)
 	if err != nil {
 		return err
 	}
-	_, err = ac.db.Collection(ac.adminCollectionName).DeleteOne(context.TODO(), bson.M{"_id": targetAdmin.ID})
+	_, err = ac.db.Collection(ac.collectionName).DeleteOne(context.TODO(), bson.M{"_id": targetAdmin.ID})
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-/*
-	func (ac *AdminController) DeleteAdmin(oldAdmin *models.Admin, userName, passWord string) error {
-		if !ac.Auth(userName, passWord) {
-			return errors.New("authentication failed")
-		}
-		_, err := ac.db.Collection(ac.adminCollectionName).DeleteOne(context.TODO(), bson.M{"_id": oldAdmin.ID})
-		if err != nil {
-			return err
-		}
-		return nil
-	}
-*/
 func (ac *AdminController) CreateAdmin(oldUserName, oldPassword, newUsername, newPassword string) error {
 	if !ac.Auth(oldUserName, oldPassword) {
 		return errors.New("authentication failed for old admin")
@@ -65,7 +54,7 @@ func (ac *AdminController) CreateAdmin(oldUserName, oldPassword, newUsername, ne
 		Password: newPassword,
 	}
 
-	_, err := ac.db.Collection(ac.adminCollectionName).InsertOne(context.TODO(), newAdmin)
+	_, err := ac.db.Collection(ac.collectionName).InsertOne(context.TODO(), newAdmin)
 	if err != nil {
 		return err
 	}
@@ -75,7 +64,7 @@ func (ac *AdminController) CreateAdmin(oldUserName, oldPassword, newUsername, ne
 
 func (ac *AdminController) Auth(userName, passWord string) bool {
 	admin := &models.Admin{}
-	err := ac.db.Collection(ac.adminCollectionName).FindOne(context.TODO(), bson.M{
+	err := ac.db.Collection(ac.collectionName).FindOne(context.TODO(), bson.M{
 		"username": userName,
 	}).Decode(admin)
 
